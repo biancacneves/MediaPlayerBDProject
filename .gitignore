@@ -1,0 +1,22 @@
+# Arquivos do banco de dados SQLite
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Arquivos de log
+*.log
+
+# Diretórios do Docker
+.docker/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
