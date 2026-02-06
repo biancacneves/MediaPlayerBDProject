@@ -366,7 +366,11 @@ ORDER BY total_reproducoes DESC;
 
 ## 👥 Autores
 
-Projeto desenvolvido para a disciplina de Banco de Dados.
+**Estudantes**: Bianca Maria Cardoso Neves, Luana Vitória da Silva Brito, Vinicius Mendes, Yasmin da Silva Muniz
+
+**Curso/Disciplina**: BCC | Banco de Dados I
+
+**Docente**: Priscilla Kelly Machado Vieira Azevedo
 
 **Repositório**: [LuBrito371/MediaPlayerBDProject](https://github.com/LuBrito371/MediaPlayerBDProject)
 
