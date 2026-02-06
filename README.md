@@ -47,6 +47,8 @@ docker-compose down
 
 ## 🗂️ Esquema Conceitual (MERE)
 
+![Esquema Conceitual](esquema-conceitual.jpeg)
+
 ### Entidades Principais
 
 ```
@@ -359,59 +361,6 @@ JOIN MUSICA m ON h.id_musica = m.id_musica
 GROUP BY m.id_musica, m.titulo
 ORDER BY total_reproducoes DESC;
 ```
-
----
-
-## ✅ Checklist de Requisitos da Entrega
-
-### ✅ Esquema Lógico
-- **Diagrama Relacional**: Documentado neste README com representação visual dos relacionamentos
-- **Chaves Primárias**: Todas as tabelas possuem PK definida
-- **Chaves Estrangeiras**: Relacionamentos implementados com FK
-- **Transformação do MERE**: Documentado em seção específica
-
-### ✅ Dicionário de Dados
-- **Descrição das Tabelas**: 7 tabelas documentadas
-- **Tipos de Dados**: VARCHAR, INTEGER, DATE, DATETIME especificados
-- **Restrições (Constraints)**: NOT NULL, UNIQUE, DEFAULT, FK documentados
-- **Semântica dos Atributos**: Cada campo com descrição clara
-
-### ✅ Normalização
-- **1FN**: Atributos atômicos, sem grupos repetidos
-- **2FN**: Sem dependências parciais
-- **3FN**: Sem dependências transitivas
-- **Documentação**: Justificativa completa na seção de Normalização deste README
-
-### ✅ Script SQL (DDL)
-- **Localização**: `init.sql`
-- **Criação de Tabelas**: 7 tabelas com todas as constraints
-- **Índices**: 9 índices para otimização de consultas
-- **Comentários**: Script totalmente documentado
-
-### ✅ Carga de Dados (DML)
-- **Localização**: `init.sql` (após o DDL)
-- **Dados Inseridos**: 
-  - 10 Artistas (internacionais e MPB)
-  - 20 Álbuns (2 por artista)
-  - 30 Músicas
-  - 6 Usuários
-  - 5 Playlists
-  - Relacionamentos Playlist-Música completos
-  - Histórico de Reprodução para todos os usuários
-- **Método**: Povoamento automático via Docker build
-
-### ✅ Docker
-- **docker-compose.yaml**: Configurado e funcional
-- **Dockerfile**: Build automático do banco
-- **Porta**: 8080 exposta para interface web
-- **Banco Povoado**: Criado automaticamente no build
-
-### ✅ README.md
-- **Instruções Docker**: Comandos para build e execução
-- **Esquema Conceitual**: Diagrama e relacionamentos
-- **Dicionário de Dados**: Tabelas completas com todos os campos
-- **Explicação do Povoamento**: Processo documentado
-- **Extras**: Consultas SQL, índices, normalização
 
 ---
 
