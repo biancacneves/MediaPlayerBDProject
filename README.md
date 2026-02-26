@@ -1,10 +1,14 @@
 # MediaPlayerBDProject - Sistema de Streaming Musical
 
+> *Desenvolvido para a disciplina de **Banco de Dados I** - UFAPE*\
+> **Docente**: Priscilla Kelly Machado Vieira Azevedo
+ 
+
 ## 📋 Sobre o Projeto
 
 Este projeto implementa um banco de dados relacional para um sistema de streaming de música, seguindo as regras de transformação de um Modelo Entidade-Relacionamento Estendido (MERE) para um banco de dados relacional.
 
-**Tecnologias**: SQLite 3, Docker, Docker Compose, SQLite Web Interface
+**Tecnologias**: PostgreSQL 15, Java Spring Boot, JPA/Hibernate, Maven, Docker, Docker Compose
 
 ## 📑 Índice
 
@@ -26,18 +30,25 @@ Este projeto implementa um banco de dados relacional para um sistema de streamin
 ### Comandos para Executar
 
 ```bash
-# Construir e iniciar o container
-docker-compose up --build
+# Iniciar o container PostgreSQL
+docker-compose up -d
 
-# Ou em modo detached (background)
-docker-compose up --build -d
+# Executar os scripts de criação do schema
+docker exec -i projeto-postgres psql -U admin -d musical < db/schema/init.sql
+
+# (Opcional) Povoar com dados de teste
+docker exec -i projeto-postgres psql -U admin -d musical < db/seed/populate_50plus.sql
 ```
 
-### Acessar a Interface Web
+### Acessar o Banco de Dados
 
-Após iniciar o container, acesse: **http://localhost:8080**
+O PostgreSQL estará disponível em **localhost:5432**
 
-A interface SQLite Web permite visualizar e consultar o banco de dados diretamente no navegador.
+- **Usuário**: admin
+- **Senha**: adminpassword
+- **Database**: musical
+
+Você pode conectar usando DBeaver, pgAdmin ou qualquer cliente PostgreSQL.
 
 ### Parar o Container
 
@@ -47,7 +58,7 @@ docker-compose down
 
 ## 🗂️ Esquema Conceitual (MERE)
 
-![Esquema Conceitual](esquema-conceitual.jpeg)
+![Esquema Conceitual](assets/esquema-conceitual.jpeg)
 
 ### Entidades Principais
 
@@ -199,14 +210,22 @@ O banco de dados está **normalizado na Terceira Forma Normal (3FN)**.
 
 ### Método de Carga
 
-Os dados são populados automaticamente através do arquivo **`init.sql`** durante a construção da imagem Docker.
+O banco de dados é configurado através de scripts SQL organizados na pasta **`db/`**:
 
-### Processo:
+- **`db/schema/init.sql`**: Criação do schema (DDL) com tabelas, chaves e índices
+- **`db/seed/populate_50plus.sql`**: Povoamento em massa para testes (50+ registros por tabela)
+- **`db/validacao/validacao_integridade.sql`**: Queries de validação de integridade referencial
+- **`db/views/views_relatorios.sql`**: Views analíticas com JOIN + GROUP BY + agregações
+- **`db/views/consultas.sql`**: Exemplos de consultas úteis
 
-1. O **Dockerfile** copia o arquivo `init.sql` para o container
-2. Durante o build, o comando `sqlite3 musical.db < init.sql` é executado
-3. O script SQL cria todas as tabelas (DDL) e insere dados de teste (DML)
-4. O banco `musical.db` é criado e povoado antes do container iniciar
+### Execução dos Scripts
+
+```bash
+# Com PostgreSQL rodando via docker-compose
+docker exec -i projeto-postgres psql -U admin -d musical < db/schema/init.sql
+docker exec -i projeto-postgres psql -U admin -d musical < db/seed/populate_50plus.sql
+docker exec -i projeto-postgres psql -U admin -d musical < db/views/views_relatorios.sql
+```
 
 ### Dados Inseridos
 
@@ -223,7 +242,7 @@ O banco contém dados de exemplo incluindo:
 ### Código de Inserção (DML)
 
 ```sql
--- Exemplo de inserções (dados completos no arquivo init.sql)
+-- Exemplo de inserções (dados completos em db/schema/init.sql e db/seed/populate_50plus.sql)
 
 -- Inserção de Artistas (10 artistas)
 INSERT INTO ARTISTA VALUES (1, 'Coldplay');
@@ -308,10 +327,23 @@ Para melhorar o desempenho das consultas, foram criados os seguintes índices:
 ```
 MediaPlayerBDProject/
 │
-├── docker-compose.yaml    # Orquestração do container
-├── Dockerfile             # Definição da imagem Docker
-├── init.sql               # Script DDL + DML (criação e povoamento)
-├── consultas.sql          # Exemplos de consultas SQL úteis e avançadas
+├── assets/                # Recursos visuais (diagramas, imagens)
+│   └── esquema-conceitual.jpeg  # Diagrama ER do projeto
+│
+├── db/                    # Scripts de banco de dados organizados
+│   ├── schema/            # DDL - Definição de tabelas e índices
+│   │   └── init.sql       # Criação do schema completo
+│   ├── seed/              # DML - Povoamento inicial e testes
+│   │   └── populate_50plus.sql  # Massa de dados para testes (50+ registros)
+│   ├── validacao/         # Scripts de validação e integridade
+│   │   └── validacao_integridade.sql  # Testes de FK e consistência
+│   └── views/             # Views e consultas complexas
+│       ├── views_relatorios.sql  # Views analíticas com agregações
+│       └── consultas.sql  # Exemplos de queries úteis
+│
+├── back-end/              # API Spring Boot (Java)
+├── docker-compose.yaml    # Orquestração do container PostgreSQL
+├── Dockerfile             # Imagem Docker (SQLite - legacy)
 └── README.md              # Documentação principal (este arquivo)
 ```
 
@@ -319,7 +351,7 @@ MediaPlayerBDProject/
 
 ## 📊 Consultas SQL Úteis
 
-> **📄 Para ver mais exemplos de consultas avançadas, estatísticas e análises, consulte:** [consultas.sql](consultas.sql)
+> **📄 Para ver mais exemplos de consultas avançadas, estatísticas e análises, consulte:** [consultas.sql](db/views/consultas.sql)
 
 ### Listar todas as músicas de um artista
 
@@ -368,14 +400,8 @@ ORDER BY total_reproducoes DESC;
 
 **Estudantes**: Bianca Maria Cardoso Neves, Luana Vitória da Silva Brito, Vinicius Mendes, Yasmin da Silva Muniz
 
-**Curso/Disciplina**: BCC | Banco de Dados I
-
-**Docente**: Priscilla Kelly Machado Vieira Azevedo
-
 **Repositório**: [LuBrito371/MediaPlayerBDProject](https://github.com/LuBrito371/MediaPlayerBDProject)
 
 ---
-
-## 📝 Licença
 
 Este projeto é de uso acadêmico.
