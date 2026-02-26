@@ -24,12 +24,12 @@ DROP TABLE IF EXISTS USUARIO CASCADE;
 -- ====================================
 
 CREATE TABLE ARTISTA (
-    id_artista INTEGER PRIMARY KEY,
+    id_artista SERIAL PRIMARY KEY,
     nome VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE ALBUM (
-    id_album INTEGER PRIMARY KEY,
+    id_album SERIAL PRIMARY KEY,
     titulo VARCHAR(100) NOT NULL,
     ano_lancamento INTEGER NOT NULL,
     genero VARCHAR(50) NOT NULL,
@@ -38,7 +38,7 @@ CREATE TABLE ALBUM (
 );
 
 CREATE TABLE MUSICA (
-    id_musica INTEGER PRIMARY KEY,
+    id_musica SERIAL PRIMARY KEY,
     titulo VARCHAR(100) NOT NULL,
     duracao INTEGER NOT NULL,
     url_musica VARCHAR(255) NOT NULL,
@@ -47,14 +47,14 @@ CREATE TABLE MUSICA (
 );
 
 CREATE TABLE USUARIO (
-    id_usuario INTEGER PRIMARY KEY,
+    id_usuario SERIAL PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     senha VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE PLAYLIST (
-    id_playlist INTEGER PRIMARY KEY,
+    id_playlist SERIAL PRIMARY KEY,
     nome_playlist VARCHAR(100) NOT NULL,
     data_criacao DATE DEFAULT CURRENT_DATE,
     id_usuario INTEGER NOT NULL,
@@ -62,7 +62,7 @@ CREATE TABLE PLAYLIST (
 );
 
 CREATE TABLE PLAYLIST_MUSICA (
-    id_playlist INTEGER NOT NULL,
+    id_playlist SERIAL NOT NULL,
     id_musica INTEGER NOT NULL,
     data_adicao DATE NOT NULL,
     PRIMARY KEY (id_playlist, id_musica),
@@ -71,7 +71,7 @@ CREATE TABLE PLAYLIST_MUSICA (
 );
 
 CREATE TABLE HISTORICO_REPRODUCAO (
-    id_usuario INTEGER NOT NULL,
+    id_usuario SERIAL NOT NULL,
     id_musica INTEGER NOT NULL,
     data_hora_reproducao TIMESTAMP NOT NULL,
     PRIMARY KEY (id_usuario, id_musica, data_hora_reproducao),
@@ -236,3 +236,10 @@ INSERT INTO HISTORICO_REPRODUCAO VALUES (6, 22, '2023-11-19 15:00:00');
 INSERT INTO HISTORICO_REPRODUCAO VALUES (6, 23, '2023-11-19 15:04:00');
 INSERT INTO HISTORICO_REPRODUCAO VALUES (6, 28, '2023-11-19 15:08:00');
 INSERT INTO HISTORICO_REPRODUCAO VALUES (6, 21, '2023-11-19 16:00:00');
+
+-- Sincronizar o contador do SERIAL com o maior ID existente
+SELECT setval('album_id_album_seq', (SELECT MAX(id_album) FROM ALBUM));
+SELECT setval('artista_id_artista_seq', (SELECT MAX(id_artista) FROM ARTISTA));
+SELECT setval('musica_id_musica_seq', (SELECT MAX(id_musica) FROM MUSICA));
+SELECT setval('usuario_id_usuario_seq', (SELECT MAX(id_usuario) FROM USUARIO));
+SELECT setval('playlist_id_playlist_seq', (SELECT MAX(id_playlist) FROM PLAYLIST));

@@ -40,7 +40,7 @@ public class AlbumController {
 		
 		existente.setTitulo(album.getTitulo());
 		existente.setAnoLancamento(album.getAnoLancamento());
-		existente.setGenero(album.getTitulo());
+		existente.setGenero(album.getGenero());
 		existente.setArtista(album.getArtista());
         
 		return service.salvar(existente);

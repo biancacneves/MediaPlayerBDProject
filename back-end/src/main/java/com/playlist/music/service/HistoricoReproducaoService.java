@@ -1,11 +1,17 @@
 package com.playlist.music.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.playlist.music.entities.*;
-import com.playlist.music.repository.*;
+import com.playlist.music.entities.HistoricoReproducao;
+import com.playlist.music.entities.HistoricoReproducaoId;
+import com.playlist.music.entities.Musica;
+import com.playlist.music.entities.Usuario;
+import com.playlist.music.repository.HistoricoReproducaoRepository;
+import com.playlist.music.repository.MusicaRepository;
+import com.playlist.music.repository.UsuarioRepository;
 
 @Service
 public class HistoricoReproducaoService {
@@ -20,6 +26,10 @@ public class HistoricoReproducaoService {
         this.usuarioRepository = usuarioRepository;
         this.musicaRepository = musicaRepository;
         this.repository = repository;
+    }
+
+    public List<HistoricoReproducao> listarPorUsuario(Integer usuarioId) {
+        return repository.findByUsuario_IdUsuario(usuarioId);
     }
 
     public HistoricoReproducao registrar(Integer usuarioId, Integer musicaId) {

@@ -1,6 +1,8 @@
 package com.playlist.music.controller;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import com.playlist.music.entities.Playlist;
@@ -12,11 +14,8 @@ import com.playlist.music.service.PlaylistService;
 @RequiredArgsConstructor
 public class PlaylistController {
 
+    @Autowired
     private PlaylistService service;
-    
-    public PlaylistController(PlaylistService service) {
-        this.service = service;
-    }
 
     @GetMapping
     public List<Playlist> listar() {

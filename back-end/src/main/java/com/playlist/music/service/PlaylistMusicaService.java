@@ -1,11 +1,17 @@
 package com.playlist.music.service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.playlist.music.entities.*;
-import com.playlist.music.repository.*;
+import com.playlist.music.entities.Musica;
+import com.playlist.music.entities.Playlist;
+import com.playlist.music.entities.PlaylistMusica;
+import com.playlist.music.entities.PlaylistMusicaId;
+import com.playlist.music.repository.MusicaRepository;
+import com.playlist.music.repository.PlaylistMusicaRepository;
+import com.playlist.music.repository.PlaylistRepository;
 
 @Service
 public class PlaylistMusicaService {
@@ -20,6 +26,10 @@ public class PlaylistMusicaService {
         this.playlistRepository = playlistRepository;
         this.musicaRepository = musicaRepository;
         this.repository = repository;
+    }
+
+    public List<PlaylistMusica> buscarMusicasPorPlaylist(Integer playlistId) {
+        return repository.findByPlaylist_IdPlaylist(playlistId);
     }
 
     public PlaylistMusica adicionarMusica(Integer playlistId, Integer musicaId) {

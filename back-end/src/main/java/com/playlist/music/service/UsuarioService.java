@@ -11,11 +11,7 @@ import com.playlist.music.repository.UsuarioRepository;
 @RequiredArgsConstructor
 public class UsuarioService {
 
-    private UsuarioRepository repository;
-    
-    public UsuarioService(UsuarioRepository repository) {
-        this.repository = repository;
-    }
+    private final UsuarioRepository repository;
 
     public List<Usuario> listar() {
         return repository.findAll();

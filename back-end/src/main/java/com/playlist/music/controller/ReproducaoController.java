@@ -1,4 +1,7 @@
 package com.playlist.music.controller;
+import java.util.List;
+
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,13 +11,18 @@ import com.playlist.music.entities.HistoricoReproducao;
 import com.playlist.music.service.HistoricoReproducaoService;
 
 @RestController
-@RequestMapping("/usuarios")
+@RequestMapping("/historico")
 public class ReproducaoController {
 
     private final HistoricoReproducaoService service;
 
     public ReproducaoController(HistoricoReproducaoService service) {
         this.service = service;
+    }
+
+    @GetMapping("/{usuarioId}")
+    public List<HistoricoReproducao> listarHistorico(@PathVariable Integer usuarioId) {
+        return service.listarPorUsuario(usuarioId);
     }
 
     @PostMapping("/{usuarioId}/reproduzir/{musicaId}")
