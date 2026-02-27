@@ -8,7 +8,7 @@
 
 Este projeto implementa um banco de dados relacional para um sistema de streaming de música, seguindo as regras de transformação de um Modelo Entidade-Relacionamento Estendido (MERE) para um banco de dados relacional.
 
-**Tecnologias**: PostgreSQL 15, Java Spring Boot, JPA/Hibernate, Maven, Docker, Docker Compose
+**Tecnologias**: PostgreSQL 15, Java Spring Boot, JPA/Hibernate, Maven, React, Vite, Axios, Docker, Docker Compose
 
 ## 📑 Índice
 
@@ -24,8 +24,7 @@ Este projeto implementa um banco de dados relacional para um sistema de streamin
 ## 🚀 Como Rodar o Projeto
 
 ### Pré-requisitos
-- Docker instalado
-- Docker Compose instalado
+- Docker Desktop Instalado
 
 ### Comandos para Executar
 
@@ -39,6 +38,14 @@ docker exec -i projeto-postgres psql -U admin -d musical < db/schema/init.sql
 # (Opcional) Povoar com dados de teste
 docker exec -i projeto-postgres psql -U admin -d musical < db/seed/populate_50plus.sql
 ```
+
+### Acessar o Backend
+
+O Front estará disponível em **localhost:8080**
+
+### Acessar o Frontend
+
+O Front estará disponível em **localhost:5173**
 
 ### Acessar o Banco de Dados
 
@@ -58,7 +65,7 @@ docker-compose down
 
 ## 🗂️ Esquema Conceitual (MERE)
 
-![Esquema Conceitual](assets/esquema-conceitual.jpeg)
+![Esquema Conceitual](assets/esquema-conceitual.png)
 
 ### Entidades Principais
 
