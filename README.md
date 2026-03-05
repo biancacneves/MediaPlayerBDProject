@@ -368,9 +368,23 @@ Para melhorar o desempenho das consultas, foram criados os seguintes índices:
 
 ## ✅ Correções da Versão Passada
 
-- Integração Front + Back + Banco via Docker Compose.
-- Endpoints de relatórios implementados e consumidos no frontend.
-- Ajustes de organização e documentação dos scripts SQL na pasta `db/`.
+- **Erro anterior**: não era possível atualizar registros pelo frontend.  
+    **Correção nesta versão**: fluxo de edição/atualização implementado nas telas de Artistas, Usuários, Álbuns, Músicas e Playlists.
+
+- **Erro anterior**: IDs enviados pelo frontend não correspondiam aos campos do backend (ex.: `id` genérico).  
+    **Correção nesta versão**: payloads e uso de IDs ajustados para os campos corretos (`idArtista`, `idUsuario`, `idAlbum`, `idMusica`, `idPlaylist`), corrigindo falhas de salvar/excluir.
+
+- **Erro anterior**: CRUD de Playlist incompleto no backend.  
+    **Correção nesta versão**: endpoints de Playlist revisados/completados, incluindo busca por ID e atualização.
+
+- **Erro anterior**: scripts de seed/views não eram aplicados ao subir via Docker.  
+    **Correção nesta versão**: mapeamentos no `docker-compose.yaml` para inicialização automática do schema, seed e views, com orientação de reset de volume (`docker compose down -v` + `docker compose up --build`) para reaplicação.
+
+- **Erro anterior**: criação de registros podia falhar por sequência de IDs desatualizada após seed.  
+    **Correção nesta versão**: sincronização das sequences adicionada no script `db/seed/populate_50plus.sql`.
+
+- **Erro anterior**: instabilidade do backend na inicialização junto ao banco.  
+    **Correção nesta versão**: ajustes de startup no Docker Compose (healthcheck/ordem de dependência/restart) e configuração JPA para não alterar schema controlado por SQL.
 
 ---
 
