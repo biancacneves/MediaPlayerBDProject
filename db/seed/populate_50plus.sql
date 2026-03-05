@@ -101,12 +101,27 @@ SELECT id_usuario, nome, email, senha
 FROM (
     SELECT
         gs AS id_usuario,
-        'Usuario Gerado ' || gs AS nome,
-        'usuario' || gs || '@email.com' AS email,
+        (ARRAY[
+            'Lucas Almeida','Beatriz Souza','Rafael Lima','Camila Rocha','Thiago Martins',
+            'Fernanda Costa','Gustavo Ribeiro','Patricia Gomes','Renato Carvalho','Juliana Dias',
+            'Matheus Oliveira','Vanessa Barbosa','Felipe Araujo','Larissa Nunes','Bruno Cardoso',
+            'Mariana Teixeira','Diego Ferreira','Aline Rodrigues','Caio Melo','Priscila Batista',
+            'Eduardo Moraes','Leticia Pires','Vinicius Santos','Carolina Freitas','Rodrigo Lopes',
+            'Amanda Cavalcanti','Igor Monteiro','Bianca Alves','Henrique Porto','Tatiane Xavier',
+            'Leonardo Farias','Isabela Cunha','Anderson Vieira','Natalia Prado','Paulo Henrique',
+            'Renata Sales','Daniel Moura','Gabriela Andrade','Marcelo Peixoto','Bruna Campos',
+            'Vitor Fernandes','Elisa Tavares','Douglas Ramos','Carla Medeiros','Otavio Neves',
+            'Monica Barros','Cesar Magalhaes','Simone Aguiar','Murilo Fonseca','Alice Brito',
+            'Heitor Antunes','Talita Pinheiro','Sergio Paiva','Clara Melo'
+        ])[1 + ((gs - 7) % 54)] AS nome,
+        'usuario.real.' || gs || '@mail.com' AS email,
         'hash' || gs AS senha
     FROM generate_series(7, 60) AS gs
 ) AS dados
-ON CONFLICT (id_usuario) DO NOTHING;
+ON CONFLICT (id_usuario) DO UPDATE
+SET nome = EXCLUDED.nome,
+    email = EXCLUDED.email,
+    senha = EXCLUDED.senha;
 
 -- Playlists: cria playlists distribuídas entre os usuários
 INSERT INTO PLAYLIST (id_playlist, nome_playlist, data_criacao, id_usuario)
