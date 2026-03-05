@@ -9,15 +9,24 @@ services:
     ports:
       - "5432:5432" 
     volumes:
-      - ./db/schema/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./db/schema/init.sql:/docker-entrypoint-initdb.d/01_init.sql
+      - ./db/seed/populate_50plus.sql:/docker-entrypoint-initdb.d/02_populate_50plus.sql
+      - ./db/views/views_relatorios.sql:/docker-entrypoint-initdb.d/03_views_relatorios.sql
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d musical"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
   backend:
     build: ./back-end  
+    restart: on-failure
     ports:
       - "8080:8080"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/musical
       - SPRING_DATASOURCE_USERNAME=admin

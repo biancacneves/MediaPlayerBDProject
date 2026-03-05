@@ -95,6 +95,13 @@ FROM USUARIO u
 CROSS JOIN generate_series(1, 5) AS rep
 ON CONFLICT (id_usuario, id_musica, data_hora_reproducao) DO NOTHING;
 
+-- Sincroniza sequências com o maior ID existente
+SELECT setval('artista_id_artista_seq', COALESCE((SELECT MAX(id_artista) FROM ARTISTA), 1));
+SELECT setval('album_id_album_seq', COALESCE((SELECT MAX(id_album) FROM ALBUM), 1));
+SELECT setval('musica_id_musica_seq', COALESCE((SELECT MAX(id_musica) FROM MUSICA), 1));
+SELECT setval('usuario_id_usuario_seq', COALESCE((SELECT MAX(id_usuario) FROM USUARIO), 1));
+SELECT setval('playlist_id_playlist_seq', COALESCE((SELECT MAX(id_playlist) FROM PLAYLIST), 1));
+
 COMMIT;
 
 -- Conferência rápida de volume após o povoamento

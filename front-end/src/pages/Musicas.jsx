@@ -4,7 +4,10 @@ import api from "../services/api";
 export default function Musicas() {
   const [musicas, setMusicas] = useState([]);
   const [titulo, setTitulo] = useState("");
-  const [idAlbum, setIdAlbum] = useState("");
+  const [duracao, setDuracao] = useState("");
+  const [urlMusica, setUrlMusica] = useState("");
+  const [albumId, setAlbumId] = useState("");
+  const [idEdicao, setIdEdicao] = useState(null);
 
   useEffect(() => {
     listar();
@@ -15,18 +18,41 @@ export default function Musicas() {
   }
 
   function salvar() {
-    api.post("/musicas", {
+    const payload = {
       titulo,
-      album: { id: idAlbum }
-    }).then(() => {
-      setTitulo("");
-      setIdAlbum("");
+      duracao: Number(duracao),
+      urlMusica,
+      album: { idAlbum: Number(albumId) }
+    };
+
+    const requisicao = idEdicao
+      ? api.put(`/musicas/${idEdicao}`, payload)
+      : api.post("/musicas", payload);
+
+    requisicao.then(() => {
+      limparFormulario();
       listar();
     });
   }
 
-  function excluir(idMusica) {
-    api.delete(`/musicas/${idMusica}`).then(listar);
+  function excluir(id) {
+    api.delete(`/musicas/${id}`).then(listar);
+  }
+
+  function editar(musica) {
+    setIdEdicao(musica.idMusica);
+    setTitulo(musica.titulo || "");
+    setDuracao(musica.duracao ?? "");
+    setUrlMusica(musica.urlMusica || "");
+    setAlbumId(musica.album?.idAlbum ?? "");
+  }
+
+  function limparFormulario() {
+    setTitulo("");
+    setDuracao("");
+    setUrlMusica("");
+    setAlbumId("");
+    setIdEdicao(null);
   }
 
   return (
@@ -40,12 +66,25 @@ export default function Musicas() {
       />
 
       <input
-        placeholder="ID do álbum"
-        value={idAlbum}
-        onChange={e => setIdAlbum(e.target.value)}
+        placeholder="Duração (segundos)"
+        value={duracao}
+        onChange={e => setDuracao(e.target.value)}
       />
 
-      <button onClick={salvar}>Salvar</button>
+      <input
+        placeholder="URL da música"
+        value={urlMusica}
+        onChange={e => setUrlMusica(e.target.value)}
+      />
+
+      <input
+        placeholder="ID do álbum"
+        value={albumId}
+        onChange={e => setAlbumId(e.target.value)}
+      />
+
+      <button onClick={salvar}>{idEdicao ? "Atualizar" : "Salvar"}</button>
+      {idEdicao && <button onClick={limparFormulario}>Cancelar</button>}
 
       <table border="1" width="100%" style={{ marginTop: 20 }}>
         <thead>
@@ -61,6 +100,7 @@ export default function Musicas() {
               <td>{m.idMusica}</td>
               <td>{m.titulo}</td>
               <td>
+                <button onClick={() => editar(m)}>Editar</button>
                 <button onClick={() => excluir(m.idMusica)}>Excluir</button>
               </td>
             </tr>

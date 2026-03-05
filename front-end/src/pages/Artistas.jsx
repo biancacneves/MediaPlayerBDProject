@@ -4,6 +4,7 @@ import api from "../services/api";
 export default function Artistas() {
   const [artistas, setArtistas] = useState([]);
   const [nome, setNome] = useState("");
+  const [idEdicao, setIdEdicao] = useState(null);
 
   useEffect(() => {
     listar();
@@ -14,15 +15,29 @@ export default function Artistas() {
   }
 
   function salvar() {
-    api.post("/artistas", { nome }).then(() => {
-      setNome("");
+    const payload = { nome };
+    const requisicao = idEdicao
+      ? api.put(`/artistas/${idEdicao}`, payload)
+      : api.post("/artistas", payload);
+
+    requisicao.then(() => {
+      limparFormulario();
       listar();
     });
   }
 
-  function excluir(idArtista) {
-    console.log(idArtista);
-    api.delete(`/artistas/${idArtista}`).then(listar);
+  function excluir(id) {
+    api.delete(`/artistas/${id}`).then(listar);
+  }
+
+  function editar(artista) {
+    setIdEdicao(artista.idArtista);
+    setNome(artista.nome || "");
+  }
+
+  function limparFormulario() {
+    setNome("");
+    setIdEdicao(null);
   }
 
   return (
@@ -34,7 +49,8 @@ export default function Artistas() {
         value={nome}
         onChange={e => setNome(e.target.value)}
       />
-      <button onClick={salvar}>Salvar</button>
+      <button onClick={salvar}>{idEdicao ? "Atualizar" : "Salvar"}</button>
+      {idEdicao && <button onClick={limparFormulario}>Cancelar</button>}
 
       <table border="1" width="100%" style={{ marginTop: 20 }}>
         <thead>
@@ -51,6 +67,7 @@ export default function Artistas() {
               <td>{a.idArtista}</td>
               <td>{a.nome}</td>
               <td>
+                <button onClick={() => editar(a)}>Editar</button>
                 <button onClick={() => excluir(a.idArtista)}>Excluir</button>
               </td>
             </tr>

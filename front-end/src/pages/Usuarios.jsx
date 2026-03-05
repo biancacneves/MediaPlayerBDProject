@@ -4,6 +4,9 @@ import api from "../services/api";
 export default function Usuarios() {
   const [usuarios, setUsuarios] = useState([]);
   const [nome, setNome] = useState("");
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [idEdicao, setIdEdicao] = useState(null);
 
   useEffect(() => {
     listar();
@@ -14,14 +17,33 @@ export default function Usuarios() {
   }
 
   function salvar() {
-    api.post("/usuarios", { nome }).then(() => {
-      setNome("");
+    const payload = { nome, email, senha };
+    const requisicao = idEdicao
+      ? api.put(`/usuarios/${idEdicao}`, payload)
+      : api.post("/usuarios", payload);
+
+    requisicao.then(() => {
+      limparFormulario();
       listar();
     });
   }
 
-  function excluir(idUsuario) {
-    api.delete(`/usuarios/${idUsuario}`).then(listar);
+  function excluir(id) {
+    api.delete(`/usuarios/${id}`).then(listar);
+  }
+
+  function editar(usuario) {
+    setIdEdicao(usuario.idUsuario);
+    setNome(usuario.nome || "");
+    setEmail(usuario.email || "");
+    setSenha(usuario.senha || "");
+  }
+
+  function limparFormulario() {
+    setNome("");
+    setEmail("");
+    setSenha("");
+    setIdEdicao(null);
   }
 
   return (
@@ -33,7 +55,20 @@ export default function Usuarios() {
         value={nome}
         onChange={e => setNome(e.target.value)}
       />
-      <button onClick={salvar}>Salvar</button>
+
+      <input
+        placeholder="Email"
+        value={email}
+        onChange={e => setEmail(e.target.value)}
+      />
+
+      <input
+        placeholder="Senha"
+        value={senha}
+        onChange={e => setSenha(e.target.value)}
+      />
+      <button onClick={salvar}>{idEdicao ? "Atualizar" : "Salvar"}</button>
+      {idEdicao && <button onClick={limparFormulario}>Cancelar</button>}
 
       <table border="1" width="100%" style={{ marginTop: 20 }}>
         <thead>
@@ -49,6 +84,7 @@ export default function Usuarios() {
               <td>{u.idUsuario}</td>
               <td>{u.nome}</td>
               <td>
+                <button onClick={() => editar(u)}>Editar</button>
                 <button onClick={() => excluir(u.idUsuario)}>Excluir</button>
               </td>
             </tr>

@@ -3,8 +3,9 @@ import api from "../services/api";
 
 export default function Playlists() {
   const [playlists, setPlaylists] = useState([]);
-  const [nome, setNome] = useState("");
-  const [idUsuario, setIdUsuario] = useState("");
+  const [nomePlaylist, setNomePlaylist] = useState("");
+  const [usuarioId, setUsuarioId] = useState("");
+  const [idEdicao, setIdEdicao] = useState(null);
 
   useEffect(() => {
     listar();
@@ -15,18 +16,35 @@ export default function Playlists() {
   }
 
   function salvar() {
-    api.post("/playlists", {
-      nome,
-      usuario: { id: idUsuario }
-    }).then(() => {
-      setNome("");
-      setIdUsuario("");
+    const payload = {
+      nomePlaylist,
+      usuario: { idUsuario: Number(usuarioId) }
+    };
+
+    const requisicao = idEdicao
+      ? api.put(`/playlists/${idEdicao}`, payload)
+      : api.post("/playlists", payload);
+
+    requisicao.then(() => {
+      limparFormulario();
       listar();
     });
   }
 
-  function excluir(idPlaylist) {
-    api.delete(`/playlists/${idPlaylist}`).then(listar);
+  function excluir(id) {
+    api.delete(`/playlists/${id}`).then(listar);
+  }
+
+  function editar(playlist) {
+    setIdEdicao(playlist.idPlaylist);
+    setNomePlaylist(playlist.nomePlaylist || "");
+    setUsuarioId(playlist.usuario?.idUsuario ?? "");
+  }
+
+  function limparFormulario() {
+    setNomePlaylist("");
+    setUsuarioId("");
+    setIdEdicao(null);
   }
 
   return (
@@ -35,17 +53,18 @@ export default function Playlists() {
 
       <input
         placeholder="Nome da playlist"
-        value={nome}
-        onChange={e => setNome(e.target.value)}
+        value={nomePlaylist}
+        onChange={e => setNomePlaylist(e.target.value)}
       />
 
       <input
         placeholder="ID do usuário"
-        value={idUsuario}
-        onChange={e => setIdUsuario(e.target.value)}
+        value={usuarioId}
+        onChange={e => setUsuarioId(e.target.value)}
       />
 
-      <button onClick={salvar}>Salvar</button>
+      <button onClick={salvar}>{idEdicao ? "Atualizar" : "Salvar"}</button>
+      {idEdicao && <button onClick={limparFormulario}>Cancelar</button>}
 
       <table border="1" width="100%" style={{ marginTop: 20 }}>
         <thead>
@@ -61,6 +80,7 @@ export default function Playlists() {
               <td>{p.idPlaylist}</td>
               <td>{p.nomePlaylist}</td>
               <td>
+                <button onClick={() => editar(p)}>Editar</button>
                 <button onClick={() => excluir(p.idPlaylist)}>Excluir</button>
               </td>
             </tr>
