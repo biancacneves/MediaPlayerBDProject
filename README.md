@@ -32,13 +32,22 @@ Este projeto implementa um banco de dados relacional para um sistema de streamin
 
 ```bash
 # Iniciar o container PostgreSQL
-docker-compose up -d
+docker compose up -d
 
 # Executar os scripts de criação do schema
 docker exec -i projeto-postgres psql -U admin -d musical < db/schema/init.sql
 
 # (Opcional) Povoar com dados de teste
 docker exec -i projeto-postgres psql -U admin -d musical < db/seed/populate_50plus.sql
+```
+
+### Reaplicar seed/views/triggers no banco existente
+
+Se o banco já existe e você precisa recriar tudo (schema, seed, views e triggers), faça reset do volume e suba novamente:
+
+```bash
+docker compose down -v
+docker compose up --build
 ```
 
 ### Acessar o Backend
@@ -62,7 +71,7 @@ Você pode conectar usando DBeaver, pgAdmin ou qualquer cliente PostgreSQL.
 ### Parar o Container
 
 ```bash
-docker-compose down
+docker compose down
 ```
 
 ## 🗂️ Esquema Conceitual (MERE)
@@ -230,7 +239,7 @@ O banco de dados é configurado através de scripts SQL organizados na pasta **`
 ### Execução dos Scripts
 
 ```bash
-# Com PostgreSQL rodando via docker-compose
+# Com PostgreSQL rodando via docker compose
 docker exec -i projeto-postgres psql -U admin -d musical < db/schema/init.sql
 docker exec -i projeto-postgres psql -U admin -d musical < db/seed/populate_50plus.sql
 docker exec -i projeto-postgres psql -U admin -d musical < db/views/views_relatorios.sql

@@ -3,8 +3,9 @@ import api from "../services/api";
 
 export default function Playlists() {
   const [playlists, setPlaylists] = useState([]);
-  const [nome, setNome] = useState("");
+  const [nomePlaylist, setNomePlaylist] = useState("");
   const [usuarioId, setUsuarioId] = useState("");
+  const [idEdicao, setIdEdicao] = useState(null);
 
   useEffect(() => {
     listar();
@@ -15,12 +16,17 @@ export default function Playlists() {
   }
 
   function salvar() {
-    api.post("/playlists", {
-      nome,
-      usuario: { id: usuarioId }
-    }).then(() => {
-      setNome("");
-      setUsuarioId("");
+    const payload = {
+      nomePlaylist,
+      usuario: { idUsuario: Number(usuarioId) }
+    };
+
+    const requisicao = idEdicao
+      ? api.put(`/playlists/${idEdicao}`, payload)
+      : api.post("/playlists", payload);
+
+    requisicao.then(() => {
+      limparFormulario();
       listar();
     });
   }
@@ -29,14 +35,26 @@ export default function Playlists() {
     api.delete(`/playlists/${id}`).then(listar);
   }
 
+  function editar(playlist) {
+    setIdEdicao(playlist.idPlaylist);
+    setNomePlaylist(playlist.nomePlaylist || "");
+    setUsuarioId(playlist.usuario?.idUsuario ?? "");
+  }
+
+  function limparFormulario() {
+    setNomePlaylist("");
+    setUsuarioId("");
+    setIdEdicao(null);
+  }
+
   return (
     <div>
       <h1>Playlists</h1>
 
       <input
         placeholder="Nome da playlist"
-        value={nome}
-        onChange={e => setNome(e.target.value)}
+        value={nomePlaylist}
+        onChange={e => setNomePlaylist(e.target.value)}
       />
 
       <input
@@ -45,7 +63,8 @@ export default function Playlists() {
         onChange={e => setUsuarioId(e.target.value)}
       />
 
-      <button onClick={salvar}>Salvar</button>
+      <button onClick={salvar}>{idEdicao ? "Atualizar" : "Salvar"}</button>
+      {idEdicao && <button onClick={limparFormulario}>Cancelar</button>}
 
       <table border="1" width="100%" style={{ marginTop: 20 }}>
         <thead>
@@ -57,11 +76,12 @@ export default function Playlists() {
         </thead>
         <tbody>
           {playlists.map(p => (
-            <tr key={p.id}>
-              <td>{p.id}</td>
-              <td>{p.nome}</td>
+            <tr key={p.idPlaylist}>
+              <td>{p.idPlaylist}</td>
+              <td>{p.nomePlaylist}</td>
               <td>
-                <button onClick={() => excluir(p.id)}>Excluir</button>
+                <button onClick={() => editar(p)}>Editar</button>
+                <button onClick={() => excluir(p.idPlaylist)}>Excluir</button>
               </td>
             </tr>
           ))}

@@ -4,7 +4,10 @@ import api from "../services/api";
 export default function Albuns() {
   const [albuns, setAlbuns] = useState([]);
   const [titulo, setTitulo] = useState("");
+  const [anoLancamento, setAnoLancamento] = useState("");
+  const [genero, setGenero] = useState("");
   const [artistaId, setArtistaId] = useState("");
+  const [idEdicao, setIdEdicao] = useState(null);
 
   useEffect(() => {
     listar();
@@ -15,18 +18,41 @@ export default function Albuns() {
   }
 
   function salvar() {
-    api.post("/albuns", {
+    const payload = {
       titulo,
-      artista: { id: artistaId }
-    }).then(() => {
-      setTitulo("");
-      setArtistaId("");
+      anoLancamento: Number(anoLancamento),
+      genero,
+      artista: { idArtista: Number(artistaId) }
+    };
+
+    const requisicao = idEdicao
+      ? api.put(`/albuns/${idEdicao}`, payload)
+      : api.post("/albuns", payload);
+
+    requisicao.then(() => {
+      limparFormulario();
       listar();
     });
   }
 
   function excluir(id) {
     api.delete(`/albuns/${id}`).then(listar);
+  }
+
+  function editar(album) {
+    setIdEdicao(album.idAlbum);
+    setTitulo(album.titulo || "");
+    setAnoLancamento(album.anoLancamento ?? "");
+    setGenero(album.genero || "");
+    setArtistaId(album.artista?.idArtista ?? "");
+  }
+
+  function limparFormulario() {
+    setTitulo("");
+    setAnoLancamento("");
+    setGenero("");
+    setArtistaId("");
+    setIdEdicao(null);
   }
 
   return (
@@ -40,12 +66,25 @@ export default function Albuns() {
       />
 
       <input
+        placeholder="Ano de lançamento"
+        value={anoLancamento}
+        onChange={e => setAnoLancamento(e.target.value)}
+      />
+
+      <input
+        placeholder="Gênero"
+        value={genero}
+        onChange={e => setGenero(e.target.value)}
+      />
+
+      <input
         placeholder="ID do artista"
         value={artistaId}
         onChange={e => setArtistaId(e.target.value)}
       />
 
-      <button onClick={salvar}>Salvar</button>
+      <button onClick={salvar}>{idEdicao ? "Atualizar" : "Salvar"}</button>
+      {idEdicao && <button onClick={limparFormulario}>Cancelar</button>}
 
       <table border="1" width="100%" style={{ marginTop: 20 }}>
         <thead>
@@ -57,11 +96,12 @@ export default function Albuns() {
         </thead>
         <tbody>
           {albuns.map(a => (
-            <tr key={a.id}>
-              <td>{a.id}</td>
+            <tr key={a.idAlbum}>
+              <td>{a.idAlbum}</td>
               <td>{a.titulo}</td>
               <td>
-                <button onClick={() => excluir(a.id)}>Excluir</button>
+                <button onClick={() => editar(a)}>Editar</button>
+                <button onClick={() => excluir(a.idAlbum)}>Excluir</button>
               </td>
             </tr>
           ))}
