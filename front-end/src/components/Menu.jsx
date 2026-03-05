@@ -17,7 +17,7 @@ export default function Menu() {
         <Link to="/albuns" style={link}>Álbuns</Link>
         <Link to="/musicas" style={link}>Músicas</Link>
         <Link to="/playlists" style={link}>Playlists</Link>
-        {/* <Link to="/relatorios" style={link}>📊 Relatórios</Link> */}
+        <Link to="/relatorios" style={link}>📊 Relatórios</Link>
       </nav>
     </div>
   );

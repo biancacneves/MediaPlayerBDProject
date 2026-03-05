@@ -18,7 +18,7 @@ export default function App() {
           <Route path="/albuns" element={<Albuns />} />
           <Route path="/musicas" element={<Musicas />} />
           <Route path="/playlists" element={<Playlists />} />
-          {/* <Route path="/relatorios" element={<Relatorios />} /> */}
+          <Route path="/relatorios" element={<Relatorios />} />
         </Routes>
       </Layout>
     </BrowserRouter>

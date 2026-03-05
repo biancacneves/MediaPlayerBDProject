@@ -18,6 +18,7 @@ DROP TABLE IF EXISTS MUSICA CASCADE;
 DROP TABLE IF EXISTS ALBUM CASCADE;
 DROP TABLE IF EXISTS ARTISTA CASCADE;
 DROP TABLE IF EXISTS USUARIO CASCADE;
+DROP TABLE IF EXISTS AUDITORIA_USUARIO CASCADE;
 
 -- ====================================
 -- CRIAÇÃO DAS TABELAS (DDL)
@@ -243,3 +244,48 @@ SELECT setval('artista_id_artista_seq', (SELECT MAX(id_artista) FROM ARTISTA));
 SELECT setval('musica_id_musica_seq', (SELECT MAX(id_musica) FROM MUSICA));
 SELECT setval('usuario_id_usuario_seq', (SELECT MAX(id_usuario) FROM USUARIO));
 SELECT setval('playlist_id_playlist_seq', (SELECT MAX(id_playlist) FROM PLAYLIST));
+
+-- ====================================
+-- GATILHO (TRIGGER): Auditoria de alterações em usuário
+-- Regra: registrar mudanças de nome/email na tabela AUDITORIA_USUARIO
+-- ====================================
+
+CREATE TABLE AUDITORIA_USUARIO (
+    id_auditoria SERIAL PRIMARY KEY,
+    id_usuario INTEGER NOT NULL,
+    nome_anterior VARCHAR(100),
+    nome_novo VARCHAR(100),
+    email_anterior VARCHAR(100),
+    email_novo VARCHAR(100),
+    data_alteracao TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE OR REPLACE FUNCTION fn_auditoria_usuario_update()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF (OLD.nome IS DISTINCT FROM NEW.nome) OR (OLD.email IS DISTINCT FROM NEW.email) THEN
+        INSERT INTO AUDITORIA_USUARIO (
+            id_usuario,
+            nome_anterior,
+            nome_novo,
+            email_anterior,
+            email_novo
+        )
+        VALUES (
+            OLD.id_usuario,
+            OLD.nome,
+            NEW.nome,
+            OLD.email,
+            NEW.email
+        );
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_auditoria_usuario_update ON USUARIO;
+CREATE TRIGGER trg_auditoria_usuario_update
+AFTER UPDATE ON USUARIO
+FOR EACH ROW
+EXECUTE FUNCTION fn_auditoria_usuario_update();

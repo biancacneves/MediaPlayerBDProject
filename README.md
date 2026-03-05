@@ -17,7 +17,9 @@ Este projeto implementa um banco de dados relacional para um sistema de streamin
 - [Dicionário de Dados](#-dicionário-de-dados)
 - [Normalização](#-normalização)
 - [Povoamento do Banco](#-povoamento-do-banco-de-dados)
+- [Gatilho (Trigger)](#-gatilho-trigger)
 - [Índices e Otimização](#-índices-e-otimização)
+- [Correções da Versão Passada](#-correções-da-versão-passada)
 - [Estrutura do Projeto](#-estrutura-do-projeto)
 - [Consultas SQL Úteis](#-consultas-sql-úteis)
 
@@ -41,7 +43,7 @@ docker exec -i projeto-postgres psql -U admin -d musical < db/seed/populate_50pl
 
 ### Acessar o Backend
 
-O Front estará disponível em **localhost:8080**
+O Backend estará disponível em **localhost:8080**
 
 ### Acessar o Frontend
 
@@ -311,6 +313,32 @@ INSERT INTO HISTORICO_REPRODUCAO VALUES (6, 22, '2023-11-19 15:00:00');
 
 ---
 
+## Gatilho (Trigger)
+
+Foi implementado um gatilho de auditoria de usuários no script [db/schema/init.sql](db/schema/init.sql).
+
+- **Trigger**: `trg_auditoria_usuario_update`
+- **Tabela auditada**: `USUARIO`
+- **Tabela de auditoria**: `AUDITORIA_USUARIO`
+- **Regra de negócio**: sempre que o nome ou email de um usuário for alterado, a mudança é registrada automaticamente com data/hora.
+
+### Como testar o trigger
+
+```sql
+-- 1) Atualizar usuário
+UPDATE USUARIO
+SET nome = 'Usuario Atualizado', email = 'usuario.atualizado@email.com'
+WHERE id_usuario = 1;
+
+-- 2) Verificar auditoria
+SELECT *
+FROM AUDITORIA_USUARIO
+WHERE id_usuario = 1
+ORDER BY data_alteracao DESC;
+```
+
+---
+
 ## 🔍 Índices e Otimização
 
 Para melhorar o desempenho das consultas, foram criados os seguintes índices:
@@ -329,13 +357,21 @@ Para melhorar o desempenho das consultas, foram criados os seguintes índices:
 
 ---
 
+## ✅ Correções da Versão Passada
+
+- Integração Front + Back + Banco via Docker Compose.
+- Endpoints de relatórios implementados e consumidos no frontend.
+- Ajustes de organização e documentação dos scripts SQL na pasta `db/`.
+
+---
+
 ## 📁 Estrutura do Projeto
 
 ```
 MediaPlayerBDProject/
 │
 ├── assets/                # Recursos visuais (diagramas, imagens)
-│   └── esquema-conceitual.jpeg  # Diagrama ER do projeto
+│   └── esquema-conceitual.png  # Diagrama ER do projeto
 │
 ├── db/                    # Scripts de banco de dados organizados
 │   ├── schema/            # DDL - Definição de tabelas e índices
