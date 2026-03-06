@@ -17,20 +17,33 @@ export default function Usuarios() {
   }
 
   function salvar() {
-    const payload = { nome, email, senha };
-    const requisicao = idEdicao
-      ? api.put(`/usuarios/${idEdicao}`, payload)
-      : api.post("/usuarios", payload);
 
-    requisicao.then(() => {
-      limparFormulario();
-      listar();
-    });
+  if (!nome || !email || !senha) {
+    alert("Preencha nome, email e senha!");
+    return;
   }
+
+  const payload = { nome, email, senha };
+
+  console.log("Payload enviado:", payload);
+
+  const requisicao = idEdicao
+    ? api.put(`/usuarios/${idEdicao}`, payload)
+    : api.post("/usuarios", payload);
+
+  requisicao.then(() => {
+    limparFormulario();
+    listar();
+  });
+}
 
   function excluir(id) {
-    api.delete(`/usuarios/${id}`).then(listar);
-  }
+  api.delete(`/usuarios/${id}`)
+    .then(listar)
+    .catch(() => {
+      alert("Não é possível excluir usuário que possui histórico.");
+    });
+}
 
   function editar(usuario) {
     setIdEdicao(usuario.idUsuario);
