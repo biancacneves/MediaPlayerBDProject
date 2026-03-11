@@ -324,12 +324,16 @@ INSERT INTO HISTORICO_REPRODUCAO VALUES (6, 22, '2023-11-19 15:00:00');
 
 ## Gatilho (Trigger)
 
-Foi implementado um gatilho de auditoria de usuários no script [db/schema/init.sql](db/schema/init.sql).
+Foram implementados gatilhos no script [db/schema/init.sql](db/schema/init.sql)..
 
 - **Trigger**: `trg_auditoria_usuario_update`
 - **Tabela auditada**: `USUARIO`
 - **Tabela de auditoria**: `AUDITORIA_USUARIO`
 - **Regra de negócio**: sempre que o nome ou email de um usuário for alterado, a mudança é registrada automaticamente com data/hora.
+
+- **Trigger**: `trg_bloquear_exclusao_artista`
+- **Tabela protegida**: `ARTISTA`
+- **Regra de integridade**: impede excluir artistas que ainda possuem músicas vinculadas (via `ALBUM` → `MUSICA`).
 
 ### Como testar o trigger
 
@@ -344,8 +348,11 @@ SELECT *
 FROM AUDITORIA_USUARIO
 WHERE id_usuario = 1
 ORDER BY data_alteracao DESC;
-```
 
+-- 3) Tentar excluir um artista com músicas (deve falhar)
+DELETE FROM ARTISTA
+WHERE id_artista = 1;
+```
 ---
 
 ## 🔍 Índices e Otimização

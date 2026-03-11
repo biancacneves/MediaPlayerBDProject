@@ -289,3 +289,31 @@ CREATE TRIGGER trg_auditoria_usuario_update
 AFTER UPDATE ON USUARIO
 FOR EACH ROW
 EXECUTE FUNCTION fn_auditoria_usuario_update();
+
+
+-- ====================================
+-- TRIGGER: Impedir exclusão de artista com músicas cadastradas
+-- Regra: artista só pode ser removido se não houver músicas relacionadas
+-- ====================================
+
+CREATE OR REPLACE FUNCTION fn_bloquear_exclusao_artista_com_musicas()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM ALBUM al
+        JOIN MUSICA m ON m.id_album = al.id_album
+        WHERE al.id_artista = OLD.id_artista
+    ) THEN
+        RAISE EXCEPTION 'Não é permitido excluir o artista %: existem músicas vinculadas a ele.', OLD.nome;
+    END IF;
+
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_bloquear_exclusao_artista ON ARTISTA;
+CREATE TRIGGER trg_bloquear_exclusao_artista
+BEFORE DELETE ON ARTISTA
+FOR EACH ROW
+EXECUTE FUNCTION fn_bloquear_exclusao_artista_com_musicas();
